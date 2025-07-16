@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buses - Travel Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages-container">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Header Content - Directly embedded #}
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">Travel Ease</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% if 'user_email' in session %}
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('trains') }}">Trains</a></li>
+                    <li><a href="{{ url_for('buses') }}">Buses</a></li>
+                    <li><a href="{{ url_for('book', type='event') }}">Events</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_email'] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h1>Search Buses</h1>
+            <form action="{{ url_for('buses') }}" method="post">
+                <div class="form-group">
+                    <label for="from_bus">From:</label>
+                    <input type="text" id="from_bus" name="from_bus" placeholder="Departure City/Station" required>
+                </div>
+                <div class="form-group">
+                    <label for="to_bus">To:</label>
+                    <input type="text" id="to_bus" name="to_bus" placeholder="Arrival City/Station" required>
+                </div>
+                <div class="form-group">
+                    <label for="departure_date_bus">Departure Date:</label>
+                    <input type="date" id="departure_date_bus" name="departure_date_bus" required>
+                </div>
+                <button type="submit">Search Buses</button>
+            </form>
+        </div>
+
+        {% if buses %}
+            <section class="search-results results-container">
+                <h2>Available Buses</h2>
+                <div class="results-grid">
+                    {% for bus in buses %}
+                        <div class="result-card">
+                            <h3>Bus from {{ bus.from }} to {{ bus.to }}</h3>
+                            <p>Bus Operator: **{{ bus.operator | default('N/A') }}**</p>
+                            <p>Date: {{ bus.date }}</p>
+                            <p>Departure: {{ bus.departure_time | default('N/A') }} | Arrival: {{ bus.arrival_time | default('N/A') }}</p>
+                            <p>Price: **${{ bus.price }}**</p>
+                            <p>Available Seats: {{ bus.available_seats | join(', ') | default('None') }}</p>
+                            <form method="POST" action="{{ url_for('book') }}">
+                                <input type="hidden" name="type" value="bus">
+                                <input type="hidden" name="from" value="{{ bus.from }}">
+                                <input type="hidden" name="to" value="{{ bus.to }}">
+                                <input type="hidden" name="date" value="{{ bus.date }}">
+                                <input type="hidden" name="price" value="{{ bus.price }}">
+                                <input type="hidden" name="selected_operator" value="{{ bus.operator | default('N/A') }}">
+                                <input type="hidden" name="selected_departure_time" value="{{ bus.departure_time | default('N/A') }}">
+                                <input type="hidden" name="selected_arrival_time" value="{{ bus.arrival_time | default('N/A') }}">
+                                <input type="hidden" name="selected_available_seats" value="{{ bus.available_seats | join(', ') }}">
+                                <button type="submit" class="btn book-now">Book Bus</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            <p class="info-message">Enter your travel details above to find available buses.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

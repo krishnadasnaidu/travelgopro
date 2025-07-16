@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels - Travel Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages-container">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Header Content - Directly embedded #}
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">Travel Ease</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% if 'user_email' in session %}
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('trains') }}">Trains</a></li>
+                    <li><a href="{{ url_for('buses') }}">Buses</a></li>
+                    <li><a href="{{ url_for('book', type='event') }}">Events</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_email'] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h1>Search Hotels</h1>
+            <form action="{{ url_for('hotels') }}" method="post">
+                <div class="form-group">
+                    <label for="location_hotel">Location:</label>
+                    <input type="text" id="location_hotel" name="location_hotel" placeholder="City or Destination" required>
+                </div>
+                <div class="form-group">
+                    <label for="check_in_date">Check-in Date:</label>
+                    <input type="date" id="check_in_date" name="check_in_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="check_out_date">Check-out Date:</label>
+                    <input type="date" id="check_out_date" name="check_out_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="guests">Number of Guests:</label>
+                    <input type="number" id="guests" name="guests" min="1" value="1" required>
+                </div>
+                <button type="submit">Search Hotels</button>
+            </form>
+        </div>
+
+        {% if hotels %}
+            <section class="search-results results-container">
+                <h2>Available Hotels</h2>
+                <div class="results-grid">
+                    {% for hotel in hotels %}
+                        <div class="result-card">
+                            <h3>{{ hotel.name }}</h3>
+                            <p>Location: {{ hotel.location }}</p>
+                            <p>Rating: {{ hotel.rating | default('N/A') }} Stars</p>
+                            <p>Price per night: **${{ hotel.price_per_night }}**</p>
+                            <p>Availability: {{ hotel.availability | default('N/A') }}</p>
+                            <form method="POST" action="{{ url_for('book') }}">
+                                <input type="hidden" name="type" value="hotel">
+                                <input type="hidden" name="hotel_name" value="{{ hotel.name }}">
+                                <input type="hidden" name="location" value="{{ hotel.location }}">
+                                <input type="hidden" name="check_in" value="{{ hotel.check_in_date }}">
+                                <input type="hidden" name="check_out" value="{{ hotel.check_out_date }}">
+                                <input type="hidden" name="price" value="{{ hotel.price_per_night }}">
+                                <button type="submit" class="btn book-now">Book Hotel</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            <p>Enter your travel details above to find available hotels.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

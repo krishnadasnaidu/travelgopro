@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Travel Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages-container">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Header Content - Directly embedded #}
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">Travel Ease</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% if 'user_email' in session %}
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('trains') }}">Trains</a></li>
+                    <li><a href="{{ url_for('buses') }}">Buses</a></li>
+                    <li><a href="{{ url_for('book', type='event') }}">Events</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_email'] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h1>Sign Up</h1>
+            <form action="{{ url_for('signin') }}" method="post">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required autocomplete="email">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required autocomplete="new-password">
+                </div>
+                <button type="submit">Sign Up</button>
+            </form>
+            <p>Already have an account? <a href="{{ url_for('login') }}">Login</a></p>
+        </div>
+    </main>
+</body>
+</html>

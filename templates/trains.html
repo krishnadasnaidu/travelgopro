@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trains - Travel Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages-container">
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Header Content - Directly embedded #}
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">Travel Ease</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% if 'user_email' in session %}
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('trains') }}">Trains</a></li>
+                    <li><a href="{{ url_for('buses') }}">Buses</a></li>
+                    <li><a href="{{ url_for('book', type='event') }}">Events</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_email'] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="form-container">
+            <h1>Search Trains</h1>
+            <form action="{{ url_for('trains') }}" method="post">
+                <div class="form-group">
+                    <label for="from_train">From:</label>
+                    <input type="text" id="from_train" name="from_train" placeholder="Departure Station" required>
+                </div>
+                <div class="form-group">
+                    <label for="to_train">To:</label>
+                    <input type="text" id="to_train" name="to_train" placeholder="Arrival Station" required>
+                </div>
+                <div class="form-group">
+                    <label for="departure_date_train">Departure Date:</label>
+                    <input type="date" id="departure_date_train" name="departure_date_train" required>
+                </div>
+                <button type="submit">Search Trains</button>
+            </form>
+        </div>
+
+        {% if trains %}
+            <section class="search-results results-container">
+                <h2>Available Trains</h2>
+                <div class="results-grid">
+                    {% for train in trains %}
+                        <div class="result-card">
+                            <h3>Train from {{ train.from }} to {{ train.to }}</h3>
+                            <p>Train Name: **{{ train.train_name | default('N/A') }}**</p>
+                            <p>Date: {{ train.date }}</p>
+                            <p>Departure: {{ train.departure_time | default('N/A') }} | Arrival: {{ train.arrival_time | default('N/A') }}</p>
+                            <p>Price: **${{ train.price }}**</p>
+                            <p>Available Seats: {{ train.available_seats | join(', ') | default('None') }}</p>
+                            <form method="POST" action="{{ url_for('book') }}">
+                                <input type="hidden" name="type" value="train">
+                                <input type="hidden" name="from" value="{{ train.from }}">
+                                <input type="hidden" name="to" value="{{ train.to }}">
+                                <input type="hidden" name="date" value="{{ train.date }}">
+                                <input type="hidden" name="price" value="{{ train.price }}">
+                                <input type="hidden" name="selected_train_name" value="{{ train.train_name | default('N/A') }}">
+                                <input type="hidden" name="selected_departure_time" value="{{ train.departure_time | default('N/A') }}">
+                                <input type="hidden" name="selected_arrival_time" value="{{ train.arrival_time | default('N/A') }}">
+                                <input type="hidden" name="selected_available_seats" value="{{ train.available_seats | join(', ') }}">
+                                <button type="submit" class="btn book-now">Book Train</button>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% else %}
+            <p class="info-message">Enter your travel details above to find available trains.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

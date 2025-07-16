@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Travel Ease</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    {# Flash Messages #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages-container"> {# Added a container for flash messages for better styling #}
+                {% for category, message in messages %}
+                    <div class="flash {{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Header Content - This section is now directly embedded instead of using {% include %} #}
+    <header class="main-header">
+        <nav class="navbar">
+            <a href="{{ url_for('home') }}" class="logo">Travel Ease</a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                {% if 'user_email' in session %}
+                    <li><a href="{{ url_for('flights') }}">Flights</a></li>
+                    <li><a href="{{ url_for('hotels') }}">Hotels</a></li>
+                    <li><a href="{{ url_for('trains') }}">Trains</a></li>
+                    <li><a href="{{ url_for('buses') }}">Buses</a></li>
+                    <li><a href="{{ url_for('book', type='event') }}">Events</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout ({{ session['user_email'] }})</a></li>
+                {% else %}
+                    <li><a href="{{ url_for('login') }}">Login</a></li>
+                    <li><a href="{{ url_for('signin') }}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    </header>
+
+    <main class="container">
+        <section class="destinations container">
+            <h2 class="section-title">Explore Our Services</h2>
+            <div class="card-grid">
+                <a href="{{ url_for('flights') }}" class="travel-card">
+                    <div class="card-icon"><i class="fas fa-plane"></i></div>
+                    <div class="card-content">
+                        <h3>Flight Bookings</h3>
+                        <p>First-class experiences with luxury airlines</p>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('hotels') }}" class="travel-card">
+                    <div class="card-icon"><i class="fas fa-hotel"></i></div>
+                    <div class="card-content">
+                        <h3>Hotel Stays</h3>
+                        <p>Comfortable and luxurious accommodations</p>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('trains') }}" class="travel-card">
+                    <div class="card-icon"><i class="fas fa-train"></i></div>
+                    <div class="card-content">
+                        <h3>Train Tickets</h3>
+                        <p>Scenic journeys across various routes</p>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('buses') }}" class="travel-card">
+                    <div class="card-icon"><i class="fas fa-bus-alt"></i></div>
+                    <div class="card-content">
+                        <h3>Bus Tickets</h3>
+                        <p>Affordable and convenient bus travel</p>
+                    </div>
+                </a>
+                
+                <a href="{{ url_for('book', type='event') }}" class="travel-card">
+                    <div class="card-icon"><i class="fas fa-ticket-alt"></i></div>
+                    <div class="card-content">
+                        <h3>Event Tickets</h3>
+                        <p>Book tickets for your favorite events</p>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <section class="about-us">
+            <h2 class="section-title">About Travel Ease</h2>
+            <div class="about-content">
+                <p>
+                    Welcome to Travel Ease, your one-stop solution for seamless travel planning! 
+                    We are dedicated to making your journey enjoyable and stress-free, offering a wide range of services 
+                    from flight and hotel bookings to train and bus tickets, and even event passes. 
+                </p>
+                <p>
+                    Our platform is designed with you in mind, ensuring a user-friendly experience and access to the best deals. 
+                    Whether you're planning a quick getaway or an elaborate adventure, Travel Ease is here to simplify every step.
+                </p>
+            </div>
+        </section>
+
+        <section class="contact-social">
+            <h2 class="section-title">Need Assistance?</h2>
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <i class="fas fa-phone-alt contact-icon"></i>
+                    <h3>Call Us</h3>
+                    <p>For immediate support, call our 24/7 hotline:</p>
+                    <a href="tel:+911234567890" class="contact-link">+91 1234 567 890</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-sms contact-icon"></i>
+                    <h3>Text Us</h3>
+                    <p>Send us a message, and we'll get back to you within hours:</p>
+                    <a href="sms:+919876543210" class="contact-link">+91 9876 543 210</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-envelope contact-icon"></i>
+                    <h3>Email Us</h3>
+                    <p>For detailed queries or feedback, drop us an email:</p>
+                    <a href="mailto:support@travelease.com" class="contact-link">support@travelease.com</a>
+                </div>
+            </div>
+
+            <div class="social-media">
+                <h3>Connect With Us</h3>
+                <div class="social-icons">
+                    <a href="https://facebook.com/travelease" target="_blank" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://twitter.com/travelease" target="_blank" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://instagram.com/travelease" target="_blank" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://linkedin.com/company/travelease" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </section>
+    </main>
+</body>
+</html>
